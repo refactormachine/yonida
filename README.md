@@ -5,13 +5,16 @@ Finds multiple modules versions in your node_modules
 ## Why?
 It is possible that a single package gets included multiple times in your bundle due to different package versions, resulting in extra bloat and may lead to bugs.
 
+## Install
+npm i @streamrail/npm-check --save-dev
+
 ## Usage 
 I recommend running this script before your tests in the following way:
 
 In package.json:
 ```
 "scripts": {
-  "test": "node npm-check.js && ... build && ... test",
+  "test": "node node_modules/@streamrail/npm-check/npm-check.js && ... build && ... test",
 },
 ```
 

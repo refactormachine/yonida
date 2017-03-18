@@ -1,6 +1,6 @@
 {
   "name": "@streamrail/npm-check",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Finds multiple modules versions in your node_modules",
   "main": "npm-check.js",
   "scripts": {
