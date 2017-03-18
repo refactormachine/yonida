@@ -1,6 +1,6 @@
 {
   "name": "@streamrail/npm-check",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Finds multiple modules versions in your node_modules",
   "main": "npm-check.js",
   "scripts": {
@@ -12,7 +12,11 @@
   },
   "keywords": [
     "npm",
-    "node_modules"
+    "node_modules",
+    "version",
+    "versions",
+    "module",
+    "dependency"
   ],
   "author": "Yoni Dabush",
   "license": "ISC",
