@@ -1,0 +1,26 @@
+{
+  "name": "@streamrail/npm-check",
+  "version": "0.0.1",
+  "description": "Finds multiple modules versions in your node_modules",
+  "main": "npm-check.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yonida/npm-check.git"
+  },
+  "keywords": [
+    "npm",
+    "node_modules"
+  ],
+  "author": "Yoni Dabush",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yonida/npm-check/issues"
+  },
+  "homepage": "https://github.com/yonida/npm-check#readme",
+  "devDependencies": {
+    "colors": "^1.1.2"
+  }
+}
