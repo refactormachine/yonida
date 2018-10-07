@@ -14,7 +14,7 @@ function getInstalledPackages(callback) {
 			process.exit(1);
 		}
 		callback(result);
-	}
+	});
 }
 
 function npmCheck() {
