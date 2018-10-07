@@ -3,7 +3,7 @@ const ignoreKeys = ['brfs'];
 const packages = {};
 const multiVersions = {};
 
-function npmCheck() {
+function getInstalledPackages(callback) {
 	require('child_process').exec('npm ls --prod --json', function (err, stdout, stderr) {
 		var result;
 		try {
@@ -15,6 +15,12 @@ function npmCheck() {
 			log(`npm ls error: ${err} | ${stderr}`);
 			process.exit(1);
 		}
+		callback(result);
+	}
+}
+
+function npmCheck() {
+	getInstalledPackages(function (result) {
 		getDependencies(result, '/');
 		const multiVersionKeys = Object.keys(multiVersions);
 
