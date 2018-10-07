@@ -34,33 +34,36 @@ function npmCheck() {
 }
 
 function getDependencies(node, path) {
-	if (node.dependencies) {
-		const dependencies = node.dependencies;
-		Object.keys(dependencies).forEach(dependencyKey => {
-
-			if (ignoreKeys.indexOf(dependencyKey) > -1) {
-				return;
-			}
-
-			const dependency = dependencies[dependencyKey];
-
-			if (typeof packages[dependencyKey] === 'undefined') { // new dependency
-				packages[dependencyKey] = [{
-					version: dependency.version,
-					path: path
-				}];
-			} else if (packages[dependencyKey].map(details => details.version).indexOf(dependency.version) === -1) { // new dependency version
-				packages[dependencyKey].push({
-					version: dependency.version,
-					path: path
-				});
-
-				multiVersions[dependencyKey] = packages[dependencyKey];
-			}
-
-			getDependencies(dependency, `${path}${dependencyKey}/`);
-		});
+	if (!node.dependencies) {
+		return;
 	}
+	
+	const dependencies = node.dependencies;
+	Object.keys(dependencies).forEach(dependencyKey => {
+
+		if (ignoreKeys.indexOf(dependencyKey) > -1) {
+			return;
+		}
+
+		const dependency = dependencies[dependencyKey];
+
+		if (typeof packages[dependencyKey] === 'undefined') { // new dependency
+			packages[dependencyKey] = [{
+				version: dependency.version,
+				path: path
+			}];
+		} else if (packages[dependencyKey].map(details => details.version).indexOf(dependency.version) === -1) { // new dependency version
+			packages[dependencyKey].push({
+				version: dependency.version,
+				path: path
+			});
+
+			multiVersions[dependencyKey] = packages[dependencyKey];
+		}
+
+		getDependencies(dependency, `${path}${dependencyKey}/`);
+	});
+
 }
 
 function log(msg, color) {
