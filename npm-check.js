@@ -1,7 +1,5 @@
 const colors = require('colors');
 const ignoreKeys = ['brfs'];
-const packages = {};
-const multiVersions = {};
 
 function getInstalledPackages(callback) {
 	require('child_process').exec('npm ls --prod --json', function (err, stdout, stderr) {
@@ -21,7 +19,7 @@ function getInstalledPackages(callback) {
 
 function npmCheck() {
 	getInstalledPackages(function (result) {
-		getDependencies(result, '/');
+		let {packages, multiVersions} = getDependencies(result, '/');
 		const multiVersionKeys = Object.keys(multiVersions);
 
 		if (multiVersionKeys.length) {
@@ -40,36 +38,43 @@ function npmCheck() {
 }
 
 function getDependencies(node, path) {
-	if (!node.dependencies) {
-		return;
-	}
+	let packages = {};
+	let multiVersions = {};
 	
-	const dependencies = node.dependencies;
-	Object.keys(dependencies).forEach(dependencyKey => {
-
-		if (ignoreKeys.indexOf(dependencyKey) > -1) {
+	function getDependenciesInner(node, path) {
+		if (!node.dependencies) {
 			return;
 		}
 
-		const dependency = dependencies[dependencyKey];
+		const dependencies = node.dependencies;
+		Object.keys(dependencies).forEach(dependencyKey => {
 
-		if (typeof packages[dependencyKey] === 'undefined') { // new dependency
-			packages[dependencyKey] = [{
-				version: dependency.version,
-				path: path
-			}];
-		} else if (packages[dependencyKey].map(details => details.version).indexOf(dependency.version) === -1) { // new dependency version
-			packages[dependencyKey].push({
-				version: dependency.version,
-				path: path
-			});
+			if (ignoreKeys.indexOf(dependencyKey) > -1) {
+				return;
+			}
 
-			multiVersions[dependencyKey] = packages[dependencyKey];
-		}
+			const dependency = dependencies[dependencyKey];
 
-		getDependencies(dependency, `${path}${dependencyKey}/`);
-	});
+			if (typeof packages[dependencyKey] === 'undefined') { // new dependency
+				packages[dependencyKey] = [{
+					version: dependency.version,
+					path: path
+				}];
+			} else if (packages[dependencyKey].map(details => details.version).indexOf(dependency.version) === -1) { // new dependency version
+				packages[dependencyKey].push({
+					version: dependency.version,
+					path: path
+				});
 
+				multiVersions[dependencyKey] = packages[dependencyKey];
+			}
+
+			getDependenciesInner(dependency, `${path}${dependencyKey}/`);
+		});
+	}
+	
+	getDependenciesInner(node, path);
+	return {packages : packages, multiVersions: multiVersions};
 }
 
 function log(msg, color) {
