@@ -1,9 +1,7 @@
 const colors = require('colors');
 const ignoreKeys = ['brfs'];
-const packages = {};
-const multiVersions = {};
 
-function npmCheck() {
+function getInstalledPackages(callback) {
 	require('child_process').exec('npm ls --prod --json', function (err, stdout, stderr) {
 		var result;
 		try {
@@ -15,7 +13,13 @@ function npmCheck() {
 			log(`npm ls error: ${err} | ${stderr}`);
 			process.exit(1);
 		}
-		getDependencies(result, '/');
+		callback(result);
+	});
+}
+
+function npmCheck() {
+	getInstalledPackages(function (result) {
+		let {packages, multiVersions} = getDependencies(result, '/');
 		const multiVersionKeys = Object.keys(multiVersions);
 
 		if (multiVersionKeys.length) {
@@ -34,7 +38,14 @@ function npmCheck() {
 }
 
 function getDependencies(node, path) {
-	if (node.dependencies) {
+	let packages = {};
+	let multiVersions = {};
+	
+	function getDependenciesInner(node, path) {
+		if (!node.dependencies) {
+			return;
+		}
+
 		const dependencies = node.dependencies;
 		Object.keys(dependencies).forEach(dependencyKey => {
 
@@ -58,9 +69,12 @@ function getDependencies(node, path) {
 				multiVersions[dependencyKey] = packages[dependencyKey];
 			}
 
-			getDependencies(dependency, `${path}${dependencyKey}/`);
+			getDependenciesInner(dependency, `${path}${dependencyKey}/`);
 		});
 	}
+	
+	getDependenciesInner(node, path);
+	return {packages : packages, multiVersions: multiVersions};
 }
 
 function log(msg, color) {
